@@ -1,5 +1,6 @@
 #include <stdio.h>
 
+#include "nothing.h"
 #include "printer.h"
 
 
@@ -19,6 +20,7 @@ void printStaticString()
 
 void printAllStrings()
 {
+    doAlmostNothing();
     printExternString();
     printStaticString();
 }

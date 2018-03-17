@@ -1,17 +1,28 @@
-CFLAGS=-Wall -O0
+CFLAGS=-Wall -O0 -g
 
-all: prog1_static prog1_dynamic
+all: prog0 prog1_static prog1_dynamic
 
-prog0: prog0.c nothing.c
-	gcc $(CFLAGS) -c nothing.c prog0.c
+prog0: prog0.c nothing.c nothing.o libnothing.so
+	gcc $(CFLAGS) -c prog0.c
 	gcc $(CFLAGS) prog0.o nothing.o -o prog0.out
+	gcc -o prog0_dynamic.out prog0.o -L. -lnothing
 
-prog1_static: prog1.c libprinter_static
+nothing.o: nothing.c
+	gcc $(CFLAGS) -c nothing.c 
+
+libnothing.so: nothing.c
+	gcc $(CFLAGS) -fPIC -c nothing.c -onothing_pic.o
+	gcc -shared -fuse-ld=gold -o libnothing.so nothing_pic.o
+
+hack_nothing: hack_nothing.c libnothing.so
+	gcc $(CFLAGS) -o hack_nothing.out hack_nothing.c -L. -lnothing -ldl
+
+prog1_static: prog1.c libprinter_static nothing.o
 	gcc -c $(CFLAGS) -I. -oprog1_static.o prog1.c
-	gcc -oprog1_static.out prog1_static.o -L. -Bstatic -lprinter
+	gcc -oprog1_static.out prog1_static.o nothing.o -L. -Bstatic -lprinter
 
-prog1_dynamic: prog1.c libprinter_shared
-	gcc $(CFLAGS) -oprog1_dynamic.out prog1.c -I. -L. -lprinter
+prog1_dynamic: prog1.c libprinter_shared libnothing.so
+	gcc $(CFLAGS) -oprog1_dynamic.out prog1.c -I. -L. -lprinter -lnothing
 
 libprinter_static: printer.o
 	ar -cvq libprinter.a printer.o

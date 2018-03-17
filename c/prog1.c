@@ -18,5 +18,6 @@ int main(int argc, const char *argv[])
     ExternFunction();
     puts("Direct call to printer");
     printAllStrings();
+    puts(kExternString);
     return 0;
 }
