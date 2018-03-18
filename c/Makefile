@@ -1,6 +1,6 @@
 CFLAGS=-Wall -O0 -g
 
-all: prog0 prog1_static prog1_dynamic
+all: prog0 prog1_static prog1_dynamic hack_nothing
 
 prog0: prog0.c nothing.c nothing.o libnothing.so
 	gcc $(CFLAGS) -c prog0.c
